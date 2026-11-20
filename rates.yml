@@ -1,0 +1,24 @@
+name: Курсы валют
+
+on:
+  schedule:
+    # Каждые 30 минут (в 7-ю и 37-ю минуту часа, время UTC).
+    # Не ставим :00 и :30, потому что в эти минуты у GitHub самая большая очередь.
+    - cron: "7,37 * * * *"
+  workflow_dispatch:   # кнопка ручного запуска во вкладке Actions
+
+permissions:
+  contents: read
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Отправить курсы в Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python3 rates.py
